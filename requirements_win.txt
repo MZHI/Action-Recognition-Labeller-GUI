@@ -1,0 +1,6 @@
+future
+numpy
+opencv-python
+tkintertable
+Pillow
+
