@@ -101,7 +101,13 @@ class label_GUI:
 
 
 		self.window = root
-		self.canvas = Canvas(self.window,width = 1850,height=1000)
+		scn_w = root.winfo_screenwidth()
+		scn_h = root.winfo_screenheight()
+		self.k_w = scn_w / 1850.0
+		self.k_h = scn_h / 1000.0
+		self.f_size = int(15.0 * self.k_w)
+
+		self.canvas = Canvas(self.window,width = scn_w-30,height=scn_h-30)
 		self.canvas.pack()
 
 		self.current_state = 0 #this is either 0 (not labeling), 1 (mid label (i.e defined start)), 2 labeled waiting for confirmation
@@ -120,89 +126,85 @@ class label_GUI:
 		
 		#label selection
 		if self.mode == 'single':
-			self.label = Label(self.window,text='Select Label:',font=("Courier", 15))
-			self.label.place(x=1150,y=150)
+			self.label = Label(self.window,text='Select Label:',font=("Courier", self.f_size))
+			self.label.place(x=int(1150.0*self.k_w), y=int(150.0*self.k_h))
 
 			self.class_drop = StringVar(self.window)
 			self.class_drop.set(self.CLASSES[0])
 			self.w_classes = OptionMenu(*(self.window, self.class_drop) + tuple(self.CLASSES))
-			self.w_classes.place(x=1400,y=150)
+			self.w_classes.place(x=int(1400.0*self.k_w), y=int(150.0*self.k_h))
 
 		if self.mode == 'duo':
-			self.label = Label(self.window,text='Select Label:',font=("Courier", 15))
-			self.label.place(x=1150,y=150)
+			self.label = Label(self.window,text='Select Label:',font=("Courier", self.f_size))
+			self.label.place(x=int(1150.0*self.k_w), y=int(150.0*self.k_h))
 
 			self.noun_drop = StringVar(self.window)
 			self.noun_drop.set(self.NOUNS[0])
 			self.w_noun = OptionMenu(*(self.window, self.noun_drop) + tuple(self.NOUNS))
-			self.w_noun.place(x=1550,y=150)
+			self.w_noun.place(x=int(1550.0*self.k_w), y=int(150.0*self.k_h))
 
 			self.verb_drop = StringVar(self.window)
 			self.verb_drop.set(self.VERBS[0])
 			self.w_verb = OptionMenu(*(self.window, self.verb_drop) + tuple(self.VERBS))
-			self.w_verb.place(x=1400,y=150)
+			self.w_verb.place(x=int(1400.0*self.k_w), y=int(150.0*self.k_h))
 
 		#play buttons:
-		self.prev_button = Button(self.window, text="Prev", height=100,width=100,command=self.prev)
-		self.next_button = Button(self.window, text="Next", height=100,width=100,command=self.nxt)
-		self.pause_button = Button(self.window, text="Stop", height = 50, width=100, command=self.pause_video)
-		self.play_button = Button(self.window, text="Play", height=50, width=100, command=partial(self.play_video,speed=1))
-		self.play_button2 = Button(self.window, text="x2", height=50, width=100, command=partial(self.play_video,speed=2))
-		self.play_button4 = Button(self.window, text="x4", height=50, width=100, command=partial(self.play_video,speed=4))
-		self.play_button8 = Button(self.window, text="x8", height=50, width=100, command=partial(self.play_video,speed=8))
+		self.prev_button = Button(self.window, text="Prev", height=int(100.0*self.k_h), width=int(100.0*self.k_w), command=self.prev)
+		self.next_button = Button(self.window, text="Next", height=int(100.0*self.k_h),width=int(100.0*self.k_w),command=self.nxt)
+		self.pause_button = Button(self.window, text="Stop", height = int(50.0*self.k_h), width=int(100.0*self.k_w), command=self.pause_video)
+		self.play_button = Button(self.window, text="Play", height=int(50.0*self.k_h), width=int(100.0*self.k_w), command=partial(self.play_video,speed=1))
+		self.play_button2 = Button(self.window, text="x2", height=int(50.0*self.k_h), width=int(100.0*self.k_w), command=partial(self.play_video,speed=2))
+		self.play_button4 = Button(self.window, text="x4", height=int(50.0*self.k_h), width=int(100.0*self.k_w), command=partial(self.play_video,speed=4))
+		self.play_button8 = Button(self.window, text="x8", height=int(50.0*self.k_h), width=int(100.0*self.k_w), command=partial(self.play_video,speed=8))
 		self.speed = 1
 
-		self.prev_button.place(bordermode=OUTSIDE, height=100, width=100, x=45,y=300)
-		self.next_button.place(bordermode=OUTSIDE, height=100, width=100, x=1050,y=300)
-		self.pause_button.place(bordermode=OUTSIDE, height= 50, width=100, x=400, y=600)
-		self.play_button.place(bordermode=OUTSIDE, height=50, width=100, x=550, y=600)
-		self.play_button2.place(bordermode=OUTSIDE, height=50, width=100, x=650, y=600)
-		self.play_button4.place(bordermode=OUTSIDE, height=50, width=100, x=750, y=600)
-		self.play_button8.place(bordermode=OUTSIDE, height=50, width=100, x=850, y=600)
+		self.prev_button.place(bordermode=OUTSIDE, height=int(100.0*self.k_h), width=int(100.0*self.k_w), x=int(45.0*self.k_w), y=int(300.0*self.k_h))
+		self.next_button.place(bordermode=OUTSIDE, height=int(100.0*self.k_h), width=int(100.0*self.k_w), x=int(1050.0*self.k_w), y=int(300.0*self.k_h))
+		self.pause_button.place(bordermode=OUTSIDE, height=int(50.0*self.k_h), width=int(100.0*self.k_w), x=int(400.0*self.k_w), y=int(600.0*self.k_h))
+		self.play_button.place(bordermode=OUTSIDE, height=int(50.0*self.k_h), width=int(100.0*self.k_w), x=int(550.0*self.k_w), y=int(600.0*self.k_h))
+		self.play_button2.place(bordermode=OUTSIDE, height=int(50.0*self.k_h), width=int(100.0*self.k_w), x=int(650.0*self.k_w), y=int(600.0*self.k_h))
+		self.play_button4.place(bordermode=OUTSIDE, height=int(50.0*self.k_h), width=int(100.0*self.k_w), x=int(750.0*self.k_w), y=int(600.0*self.k_h))
+		self.play_button8.place(bordermode=OUTSIDE, height=int(50.0*self.k_h), width=int(100.0*self.k_w), x=int(850.0*self.k_w), y=int(600.0*self.k_h))
 
 		self.pause = False #boolean, if true, video is in paused (still image state) if faluse, it is playing.
 		self.currently_playing = False
 
 		#frame input textbox and button for submitting it.
-		self.textBox = Text(self.window, height=1, width=10)
-		self.textBox.place(x=150,y=600)
-		self.buttonCommit=Button(self.window, height=1, width=10, text="Jump to frame", command=lambda: self.retrieve_input())
-		self.buttonCommit.place(x=250,y=600)
+		self.textBox = Text(self.window, height=1, width=int(10.0*self.k_w))
+		self.textBox.place(x=int(150.0*self.k_w), y=int(600.0*self.k_h))
+		self.buttonCommit=Button(self.window, height=1, width=int(10.0*self.k_w)+5, text="Jump to frame", command=lambda: self.retrieve_input())
+		self.buttonCommit.place(x=int(250.0*self.k_w), y=int(600.0*self.k_h))
 
 
 		#display frame numbers
-		self.frame_no = Label(self.window,text='Current Frame: {}'.format(self.current_index),font=("Courier", 15))
-		self.start_no = Label(self.window,text='Start Frame: {}'.format(self.start_frame),font=("Courier", 15))
-		self.end_no = Label(self.window,text='End Frame: {}'.format(self.end_frame),font=("Courier", 15))
-		self.frame_no.place(x=150,y=45)
-		self.start_no.place(x=1150,y=70)
-		self.end_no.place(x=1500,y=70)
-
+		self.frame_no = Label(self.window,text='Current Frame: {}'.format(self.current_index),font=("Courier", self.f_size))
+		self.start_no = Label(self.window,text='Start Frame: {}'.format(self.start_frame),font=("Courier", self.f_size))
+		self.end_no = Label(self.window,text='End Frame: {}'.format(self.end_frame),font=("Courier", self.f_size))
+		self.frame_no.place(x=int(150.0*self.k_w),y=int(45.0*self.k_h))
+		self.start_no.place(x=int(1150.0*self.k_w), y=int(70.0*self.k_h))
+		self.end_no.place(x=int(1500.0*self.k_w), y=int(70.0*self.k_h))
 
 		#display image with current index.
-
 		self.image = get_image(self.image_folder,self.current_index) #retun the current image from 
 		self.max_index =  len(os.listdir(self.image_folder))-1 
-		self.img =  ImageTk.PhotoImage(self.image.resize((896,504)))
+		self.img =  ImageTk.PhotoImage(self.image.resize((int(896.0*self.k_w), int(504.0*self.k_h))))
 		self.img_panel = Label(self.window,image=self.img)
 		self.img_panel.image = self.img
-		self.img_panel.place(x=150,y=75)
-
+		self.img_panel.place(x=int(150.0*self.k_w), y=int(75.0*self.k_h))
 
 		#add a slider to navigate frames
 		self.slider = Scale(self.window,from_=0,to=self.max_index,orient=HORIZONTAL)
 		self.slider.set(0)
-		self.slider.place(width=900,x=150, y=700)
+		self.slider.place(width=int(900.0*self.k_w),x=int(150.0*self.k_w), y=int(700.0*self.k_h))
 
 		self.slider_button = Button(self.window, text='Jump',command=self.goto_slider)
-		self.slider_button.place(x=1075,y=715)
-
+		self.slider_button.place(x=int(1075.0*self.k_w), y=int(715.0*self.k_h))
 
 		#console output.
 		self.console_listbox = Listbox(self.window)
 		for item in self.console_output:
 			self.console_listbox.insert(END,item)
-		self.console_listbox.place(height=200,width=600,x=1200,y=700)
+		self.console_listbox.place(height=int(200.0*self.k_h), width=int(600.0*self.k_w)-5, x=int(1200.0*self.k_w)-10, y=int(700.0*self.k_h))
 
 		#table output
 		self.label_data = self.read_csv()
@@ -215,7 +217,7 @@ class label_GUI:
 	def read_csv(self):
 		#reads csv and displays table using tkintertable
 		self.tframe = Frame(self.window)
-		self.tframe.place(x=1200,y=350,width=600) 
+		self.tframe.place(x=int(1200.0*self.k_w)-10, y=int(350.0*self.k_h)-30, width=int(600.0*self.k_w)-5)
 		self.table = TableCanvas(self.tframe)
 		self.table.importCSV(self.csv_path)
 		self.table.show()
@@ -370,7 +372,7 @@ class label_GUI:
 		Same as update_all except only updates the image and the current frame - quicker to execute as doesn't update csv table
 		"""
 		pil_img = get_image(self.image_folder,self.current_index)
-		img =  ImageTk.PhotoImage(pil_img.resize((896,504)))  #size is 896x504
+		img =  ImageTk.PhotoImage(pil_img.resize((int(896.0*self.k_w), int(504.0*self.k_h))))  #size is 896x504
 		self.img_panel.configure(image=img)
 		self.img_panel.image = img
 
@@ -383,7 +385,7 @@ class label_GUI:
 		'''
 
 		pil_img = get_image(self.image_folder,self.current_index)
-		img =  ImageTk.PhotoImage(pil_img.resize((896,504)))
+		img =  ImageTk.PhotoImage(pil_img.resize((int(896.0*self.k_w), int(504.0*self.k_h))))
 		self.img_panel.configure(image=img)
 		self.img_panel.image = img
 
