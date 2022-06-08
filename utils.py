@@ -21,9 +21,9 @@ def decode_video(video_path):
 
 
 	if os.path.isdir(new_folder): #if folder already exists
-		if os.listdir(new_folder) == 0: #if folder is empty, decode the video into it.
+		if len(os.listdir(new_folder)) == 0: #if folder is empty, decode the video into it.
 			print('decoding the video, this may take a while... Once finished GUI will load')
-			bashCommand = 'ffmpeg -i "{}" -vf scale=-1:720 -q:v 0  "{}/%06d.jpg'.format(video_path,new_folder,video_name) #create clips.
+			bashCommand = 'ffmpeg -i \"{}\" -vf scale=-1:720 -q:v 0 {}/%06d.jpg'.format(video_path,new_folder,video_name) #create clips.
 			os.system(bashCommand)
 			return new_folder
 
@@ -43,7 +43,7 @@ def get_image(folder,idx):
 	'''
 	given a folder of images and an id will return a PIL image of that index (this assumes images are stored with names in alpabetical order - this should be true unless you renamed images )
 	'''
-	image_name = os.listdir(folder)[idx]
+	image_name = sorted(os.listdir(folder))[idx]
 	image_path = os.path.join(folder,image_name)
 	
 	return Image.open(image_path)

@@ -35,7 +35,7 @@ if __name__ == '__main__':
 		noun_csv = args.noun_csv
 		classes_csv  = verb_csv,noun_csv
 
-
+	classes_csv = None
 	if args.mode == 'single':
 		classes_csv = args.classes_csv
 

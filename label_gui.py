@@ -6,6 +6,7 @@ import os
 import csv
 import cv2
 import time
+from pathlib import Path
 
 from functools import partial
 
@@ -78,6 +79,10 @@ class label_GUI:
 
 		self.video_path = video_path
 		self.fps = cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
+		if csv_path is None:
+			csv_path = Path(video_path).stem + ".csv"
+			with open(csv_path, 'w') as f:
+				f.write("Vid_id,start_frame,end_frame,class,class_id\n")
 		self.csv_path = csv_path
 
 		self.mode = mode
