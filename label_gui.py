@@ -1,15 +1,20 @@
-from tkinter import *
-from tkintertable import TableCanvas, TableModel
-from PIL import ImageTk,Image 
+# -*- coding utf-8 -*-
 
 import os
 import csv
 import cv2
 import time
+try:
+    # for Python 3
+    import tkinter as tk
+except ImportError:
+    # for Python 2
+    import Tkinter as tk
+from tkinter import *
+from tkintertable import TableCanvas, TableModel
+from PIL import ImageTk, Image
 from pathlib import Path
-
 from functools import partial
-
 from utils import decode_video, get_image
 
 
@@ -25,7 +30,6 @@ class get_labels_single():
 
 		self._labels =  read_csv(labels_csv)
 
-
 	def labels(self):
 		#turns the dic into a list of nouns used to populate the options menu.
 		dictlist = []
@@ -33,13 +37,13 @@ class get_labels_single():
 			dictlist.append(value)
 		return dictlist
 
-
 	def label_dict(self):
 		return self._labels
 
+
 class get_labels_duo():
 
-	def __init__(self,verb_csv,noun_csv):	
+	def __init__(self, verb_csv, noun_csv):
 		#this function will ultimetly parse an input csv containing all the verbs and nounds, for the moment ill just use example lists
 
 		def read_csv(the_csv):
@@ -48,9 +52,8 @@ class get_labels_duo():
 				mydict = {rows[0]:rows[1] for rows in reader}
 			return mydict
 
-		self._verbs =  read_csv(verb_csv)
-		self._nouns =  read_csv(noun_csv)
-
+		self._verbs = read_csv(verb_csv)
+		self._nouns = read_csv(noun_csv)
 
 	def verbs(self):
 		#turns the dic into a list of nouns used to populate the options menu.
@@ -73,6 +76,21 @@ class get_labels_duo():
 		return self._nouns
 
 
+def get_curr_screen_geometry(root):
+	"""
+	Workaround to get the size of the current screen in a multi-screen setup.
+	Returns:
+	geometry (str): The standard Tk geometry string. [width]x[height]+[left]+[top]
+	"""
+	# root = tk.Tk()
+	root.update_idletasks()
+	root.attributes('-fullscreen', True)
+	root.state('iconic')
+	geometry = root.winfo_geometry()
+	print(f"Geometry: {geometry}")
+	return geometry
+
+
 class label_GUI:
 
 	def __init__(self, root, video_path, csv_path, labels_csv, mode):
@@ -80,9 +98,7 @@ class label_GUI:
 		self.video_path = video_path
 		self.fps = cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
 		if csv_path is None:
-			csv_path = Path(video_path).stem + ".csv"
-			with open(csv_path, 'w') as f:
-				f.write("Vid_id,start_frame,end_frame,class,class_id\n")
+			raise FileNotFoundError
 		self.csv_path = csv_path
 
 		self.mode = mode
@@ -99,15 +115,18 @@ class label_GUI:
 			self.VERBS = self.labels.verbs()
 			self.VERBS_DICT = self.labels.verb_dict()
 
-
 		self.window = root
-		scn_w = root.winfo_screenwidth()
-		scn_h = root.winfo_screenheight()
+		# scn_w = root.winfo_screenwidth()
+		# scn_h = root.winfo_screenheight()
+		geom = get_curr_screen_geometry(root) # get geometry for multiscreen
+		scn_w, scn_h = geom.split("+")[0].split("x")
+		scn_w = int(scn_w)
+		scn_h = int(scn_h)
 		self.k_w = scn_w / 1850.0
 		self.k_h = scn_h / 1000.0
 		self.f_size = int(15.0 * self.k_w)
 
-		self.canvas = Canvas(self.window,width = scn_w-30,height=scn_h-30)
+		self.canvas = Canvas(self.window, width=scn_w-30, height=scn_h-30)
 		self.canvas.pack()
 
 		self.current_state = 0 #this is either 0 (not labeling), 1 (mid label (i.e defined start)), 2 labeled waiting for confirmation
@@ -148,7 +167,11 @@ class label_GUI:
 			self.w_verb = OptionMenu(*(self.window, self.verb_drop) + tuple(self.VERBS))
 			self.w_verb.place(x=int(1400.0*self.k_w), y=int(150.0*self.k_h))
 
-		#play buttons:
+		# Show video name
+		self.label = Label(self.window, text=f'Video name: {Path(video_path).name}', font=("Courier", self.f_size))
+		self.label.place(x=int(1150.0 * self.k_w), y=int(50.0 * self.k_h))
+
+		# play buttons:
 		self.prev_button = Button(self.window, text="Prev", height=int(100.0*self.k_h), width=int(100.0*self.k_w), command=self.prev)
 		self.next_button = Button(self.window, text="Next", height=int(100.0*self.k_h),width=int(100.0*self.k_w),command=self.nxt)
 		self.pause_button = Button(self.window, text="Stop", height = int(50.0*self.k_h), width=int(100.0*self.k_w), command=self.pause_video)
@@ -210,6 +233,8 @@ class label_GUI:
 		self.label_data = self.read_csv()
 
 		self.write('Welcome to my simple video label GUI. Please read the Github for user instructions')
+
+		root.attributes('-fullscreen', False)
 
 		self.window.mainloop()
 
